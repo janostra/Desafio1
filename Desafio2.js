@@ -3,7 +3,6 @@ const fs = require('fs').promises;
 class ProductManager {
     constructor(path) {
       this.products = [];
-      this.productIdCounter = 1;
       this.path = path;
     }
   
@@ -67,22 +66,25 @@ class ProductManager {
     }
 
 //Borrar producto por ID
-    async deleteProduct(id) {
-      try {
-          let array = await this.readFile();
-          const index = array.findIndex(product => product.id === id);
+async deleteProduct(id) {
+  try {
+      let array = await this.getAllProducts();
+      const index = array.findIndex(product => product.id === id);
 
-          if (index !== -1) {
-              array.splice(index, 1);
-              await this.saveFile(array);
-              console.log(`Producto con ID ${id} eliminado correctamente.`);
-          } else {
-              console.log(`No se encontró un producto con ID ${id}.`);
-          }
-      } catch (error) {
-          console.log("Error al eliminar el producto", error);
+      if (index !== -1) {
+          array.splice(index, 1);
+          console.log(`Producto con ID ${id} eliminado correctamente.`);
+          await this.saveFile(array);
+      } else {
+          console.log(`No se encontró un producto con ID ${id}.`);
       }
+  } catch (error) {
+      console.log("Error al eliminar el producto", error.message);
   }
+}
+
+
+
 
 //Actualizar campo de producto por ID
   async updateProduct(id, field, value) {
@@ -108,7 +110,6 @@ class ProductManager {
         const answer = await fs.readFile(this.path, "utf-8");
 
         if (!answer.trim()) {
-            // Si el archivo está vacío, devuelve un array vacío
             return [];
         }
 
@@ -116,25 +117,31 @@ class ProductManager {
         return array;
     } catch (error) {
         console.log("Error al leer el archivo", error.message);
-        // Devuelve un array vacío en caso de error
         return [];
     }
 }
 
 //Guardar archivo
-    async saveFile(array){
-      try {
-        await fs.writeFile(this.path, JSON.stringify(array, null, 2));
-      } catch (error) {
-        console.log("Error al guardar el archivo", error);
-      }
-    }
+async saveFile(array) {
+  try {
+      await fs.writeFile(this.path, JSON.stringify(array, null, 2));
+  } catch (error) {
+      console.log("Error al guardar el archivo", error);
+  }
+}
   }
 
 // Uso de la clase
-const productManager = new ProductManager('./Productos.JSON');
-productManager.addProduct("Producto 5", "Descripción 5", 50, "imagen5.jpg", "CODE5", 500);
-productManager.deleteProduct(2); // Ejemplo de eliminación por ID
-// productManager.updateProduct(1, 'price', 25); // Ejemplo de actualización por ID y campo
-const allProducts = productManager.getAllProducts();
-console.log(allProducts);
+async function main() {
+  const productManager = new ProductManager('./Productos.JSON');
+
+  await productManager.addProduct("Producto 4", "Descripción 4", 40, "imagen4.jpg", "CODE4", 400);
+  await productManager.addProduct("Producto 5", "Descripción 5", 50, "imagen5.jpg", "CODE5", 500);
+  await productManager.deleteProduct(1);
+
+
+  const allProducts = await productManager.getAllProducts();
+  console.log(allProducts);
+}
+
+main();
