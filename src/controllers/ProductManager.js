@@ -7,8 +7,8 @@ class ProductManager {
     }
   
 //Añadir producto
-    async addProduct(title, description, price, thumbnail, code, stock) {
-      if (!title || !description || !price || !thumbnail || !code || !stock) {
+    async addProduct(title, description, price, thumbnail, code, category, stock) {
+      if (!title || !description || !price || !category || !code || !stock) {
         console.log("Todos los campos son obligatorios");
         return null;
       }
@@ -30,6 +30,8 @@ class ProductManager {
         price,
         thumbnail,
         code,
+        category,
+        status: true,
         stock
       };
   
@@ -45,15 +47,22 @@ class ProductManager {
     }
 
 //Obtener todos los productos
-    async getAllProducts() {
-      return this.readFile();
+    async getAllProducts(limit) {
+      const productos = await this.readFile();
+
+      if (limit) {
+        return productos.slice(0, parseInt(limit, 10));
+      } else {
+        return productos;
+      }
     }
   
 //Obtener productos por ID
     async getProductById(id) {
       try {
         const array = await this.readFile()
-        const p = array.find(item => item.id === id);
+        const p = array.find(item => item.id === parseInt(id, 10));
+
         if (p) {
           return p;
         } else {
@@ -131,17 +140,23 @@ async saveFile(array) {
 }
   }
 
+
+module.exports = ProductManager;
 // Uso de la clase
-async function main() {
-  const productManager = new ProductManager('./Productos.JSON');
+// async function main() {
+//   const productManager = new ProductManager('./Products.JSON');
 
-  await productManager.addProduct("Producto 4", "Descripción 4", 40, "imagen4.jpg", "CODE4", 400);
-  await productManager.addProduct("Producto 5", "Descripción 5", 50, "imagen5.jpg", "CODE5", 500);
-  await productManager.deleteProduct(1);
+//   await productManager.addProduct("Producto 6", "Descripción 6", 60, "imagen6.jpg", "CODE6", 600);
+//   await productManager.addProduct("Producto 7", "Descripción 7", 70, "imagen7.jpg", "CODE7", 700);
+//   await productManager.addProduct("Producto 8", "Descripción 8", 80, "imagen8.jpg", "CODE8", 800);
+//   await productManager.addProduct("Producto 9", "Descripción 9", 90, "imagen9.jpg", "CODE9", 900);
+//   await productManager.addProduct("Producto 10", "Descripción 10", 100, "imagen10.jpg", "CODE10", 1000);
+//   await productManager.addProduct("Producto 11", "Descripción 11", 110, "imagen11.jpg", "CODE11", 1100);
+//   await productManager.deleteProduct(1);
 
 
-  const allProducts = await productManager.getAllProducts();
-  console.log(allProducts);
-}
+//   const allProducts = await productManager.getAllProducts();
+//   console.log(allProducts);
+// }
 
-main();
+// main();
