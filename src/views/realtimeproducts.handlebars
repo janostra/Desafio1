@@ -1,0 +1,26 @@
+<!-- realTimeProducts.handlebars -->
+
+<div>
+    <h2>Productos en tiempo real</h2>
+
+
+    <!-- Formulario para agregar un nuevo producto -->
+    <form>
+        <input type="text" id="name" placeholder="Nombre" required>
+        <input type="text" id="description" placeholder="Descripcion" required>
+        <input type="text" id="thumbnail"  value="Sin Imagen">
+        <input type="text" id="code" placeholder="Codigo" required>
+        <input type="text" id="category" placeholder="Categoria" required>
+        <input type="number" id="stock" placeholder="Stock" required>
+        <input type="number" id="price" placeholder="Precio" required>
+        <button type="button" onclick="agregarProducto()" id="btnEnviar">Agregar Producto</button>
+    </form>
+
+    <!-- Lista de productos -->
+    <div id="listaProductos">
+
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+<script src="/js/main.js"></script>

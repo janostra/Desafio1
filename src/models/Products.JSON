@@ -1,24 +1,24 @@
 [
   {
-    "id": 2,
-    "title": "producto3",
-    "description": "descripcion3",
-    "price": 3,
-    "thumbnail": "ruta3",
-    "code": "code3",
-    "category": "categoria3",
+    "id": 1,
+    "title": "fds",
+    "description": "dsa",
+    "price": "321",
+    "thumbnail": "Sin Imagen",
+    "code": "das",
+    "category": "fsd",
     "status": true,
-    "stock": 3
+    "stock": "231"
   },
   {
-    "id": 3,
-    "title": "producto4",
-    "description": "descripcion4",
-    "price": 4,
-    "thumbnail": "ruta4",
-    "code": "code4",
-    "category": "categoria4",
+    "id": 2,
+    "title": "sdf",
+    "description": "das",
+    "price": "321432",
+    "thumbnail": "Sin Imagen",
+    "code": "we",
+    "category": "fe",
     "status": true,
-    "stock": 4
+    "stock": "213"
   }
 ]
