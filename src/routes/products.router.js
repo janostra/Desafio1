@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const ProductManager = require('../controllers/ProductManager');
+const ProductManager = require('../controllers/product-manager-db.js');
 
 // Instancia de ProductManager
-const productManager = new ProductManager("./src/models/Products.JSON");
+const productManager = new ProductManager();
 
 
 // Endpoint para obtener todos los productos con límite opcional
@@ -14,10 +14,10 @@ router.get('/', async (req, res) => {
       let productos;
       if (isNaN(limit) || limit <= 0) {
         // Si el límite no es válido o no se proporciona, devuelve todos los productos
-        productos = await productManager.getAllProducts();
+        productos = await productManager.getProduct();
       } else {
         // Si se proporciona un límite válido, devuelve la cantidad especificada
-        productos = await productManager.getAllProducts(limit);
+        productos = await productManager.getProduct(limit);
       }
   
       res.json(productos);
@@ -45,10 +45,10 @@ router.get('/', async (req, res) => {
   
   // Endpoint para agregar un nuevo producto
   router.post('/', async (req, res) => {
-    const { title, description, price, thumbnail, code, category, stock } = req.body;
-  
+    
     try {
-        await productManager.addProduct(title, description, price, thumbnail, code, category, stock);
+        const { title, description, price, img, code, stock, category, thumbnail } = req.body;
+        await productManager.addProduct({title, description, price, img, code, stock, category, thumbnail});
         res.status(201).json({ message: 'Producto creado correctamente' });
     } catch (error) {
         res.status(500).json({ error: 'Error al crear el producto' });
@@ -57,12 +57,12 @@ router.get('/', async (req, res) => {
   
   // Endpoint para actualizar un producto por su ID
   router.put('/:id', async (req, res) => {
-    const productId = parseInt(req.params.id, 10);
-    const { field, value } = req.body;
+    const productId = req.params.id;
+    const value = req.body;
   
     try {
-        await productManager.updateProduct(productId, field, value);
-        res.json({ message: `Campo ${field} del producto con ID ${productId} actualizado correctamente` });
+        await productManager.updateProduct(productId, value);
+        res.json({ message: `El producto con ID ${productId} actualizado correctamente` });
     } catch (error) {
         console.error('Error al actualizar el producto:', error);
         res.status(500).json({ error: 'Error al actualizar el producto' });
@@ -71,7 +71,7 @@ router.get('/', async (req, res) => {
   
   // Endpoint para eliminar un producto por su ID
   router.delete('/:id', async (req, res) => {
-    const productId = parseInt(req.params.id, 10);
+    const productId = req.params.id;
   
     try {
         await productManager.deleteProduct(productId);

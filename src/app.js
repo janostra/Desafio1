@@ -5,6 +5,8 @@ const cartsRouter = require("./routes/carts.router");
 const viewsRouter = require("./routes/views.routes");
 const exphbs = require("express-handlebars");
 const socket = require("socket.io");
+const mongoose = require("mongoose");
+require("./database.js");
 
 //Configuramos handlebars
 app.engine("handlebars", exphbs.engine());
@@ -28,8 +30,9 @@ const httpServer = app.listen(PORT, () => {
 });
 
 //Debo obtener el array:
-const ProductManager = require("./controllers/ProductManager.js");
-const productManager = new ProductManager("./src/models/Products.JSON");
+const ProductManager = require("./controllers/product-manager-db.js");
+const MessageModel = require('./models/messages.model.js');
+const productManager = new ProductManager();
 
 //Creamos el server de socket.io:
 const io = socket(httpServer);
@@ -37,22 +40,45 @@ io.on("connection", async (socket) => {
   console.log("Un cliente se conecto al servidor.");
 
   //Enviamos el array de productos al cliente que se conectó:
-  socket.emit("productos", await productManager.getAllProducts())
+  socket.emit("productos", await productManager.getProduct())
 
   //Recibimos el evento eliminarProducto desde el cliente:
-  socket.on("eliminarProducto", async (id)=>{
-      await productManager.deleteProduct(id);
+  socket.on("eliminarProducto", async (_id)=>{
+      await productManager.deleteProduct(_id);
 
       //Enviar lista actualizada al cliente:
-      io.sockets.emit("productos", await productManager.getAllProducts());
+      io.sockets.emit("productos", await productManager.getProduct());
   })
 
   //Recibimos el evento agregarProducto desde el cliente:
-  socket.on("agregarProducto", async (title, description, price, thumbnail, code, category, stock) => {
-    await productManager.addProduct(title, description, price, thumbnail, code, category, stock);
+  socket.on("agregarProducto", async (title, description, price, img, code, stock ,category, thumbnail) => {
+    await productManager.addProduct(title, description, price, img, code, stock ,category, thumbnail);
 
     //Enviar lista actualizda al cliente:
-    io.sockets.emit("productos", await productManager.getAllProducts());
+    io.sockets.emit("productos", await productManager.getProduct());
   })
 
+})
+
+//Aca comienza la logica del chat
+
+let messages = [];
+
+io.on("connection", (socket) => {
+  console.log("Un cliente conectado");
+
+  socket.on("message", async data => {
+      //Recibo la data del cliente y lo voy a pushear en el array que declaramos arriba: 
+      messages.push(data);
+      //Llevamos el mensaje a Mongo:
+      const newMessage = new MessageModel({
+            user: data.user,
+            message: data.message
+        });
+        await newMessage.save();
+      //Utilizamos el método emit que nos permite emitir eventos desde el servidor hacia el cliente.
+      io.emit("messagesLogs", messages);
+  })
+
+ 
 })

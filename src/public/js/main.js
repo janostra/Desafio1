@@ -16,7 +16,7 @@ const renderProductos = (productos) => {
         card.classList.add("card");
 
         card.innerHTML = `
-                        <p> ${item.id} </p>
+                        <p> ${item._id} </p>
                         <p> ${item.title} </p>
                         <p> ${item.price} </p>
                         <button> Eliminar </button>
@@ -24,14 +24,14 @@ const renderProductos = (productos) => {
         listaProductos.appendChild(card);
 
         card.querySelector("button").addEventListener("click", ()=> {
-            eliminarProducto(item.id);
+            eliminarProducto(item._id);
         })
 
     })
 }
 
-const eliminarProducto = (id) => {
-    socket.emit("eliminarProducto", id);
+const eliminarProducto = (_id) => {
+    socket.emit("eliminarProducto", _id);
 }
 
 const agregarProducto = () => {
@@ -39,13 +39,14 @@ const agregarProducto = () => {
         title= document.getElementById("name").value,
         description= document.getElementById("description").value,
         price= document.getElementById("price").value,
-        thumbnail= document.getElementById("thumbnail").value,
+        img= document.getElementById("img").value,
         code= document.getElementById("code").value,
-        category= document.getElementById("category").value,
         stock= document.getElementById("stock").value,
+        category= document.getElementById("category").value,
+        thumbnail= document.getElementById("thumbnail").value
     // };
 
-    socket.emit("agregarProducto", title, description, price, thumbnail, code, category, stock);
+    socket.emit("agregarProducto", title, description, price, img, code, stock ,category, thumbnail);
 }
 
 //Agregamos productos desde el formulario

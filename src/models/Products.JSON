@@ -1,24 +1,12 @@
 [
-  {
-    "id": 1,
-    "title": "fds",
-    "description": "dsa",
-    "price": "321",
-    "thumbnail": "Sin Imagen",
-    "code": "das",
-    "category": "fsd",
-    "status": true,
-    "stock": "231"
-  },
-  {
-    "id": 2,
-    "title": "sdf",
-    "description": "das",
-    "price": "321432",
-    "thumbnail": "Sin Imagen",
-    "code": "we",
-    "category": "fe",
-    "status": true,
-    "stock": "213"
-  }
+    {
+    "title": "producto1",
+    "description": "descripcion1",
+    "price": 1,
+    "img": "img1",
+    "code": "code1",
+    "stock": 1,
+    "category": "categoria1",
+    "thumbnail": "ruta1"
+    }
 ]

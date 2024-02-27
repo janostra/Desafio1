@@ -1,14 +1,14 @@
 const express = require("express");
 const router = express.Router();
-const CartManager = require('../controllers/CartsManager');
+const CartManager = require('../controllers/cart-manager-db.js');
 
 // Instancia de CartManager
-const cartManager = new CartManager('./src/models/Carts.JSON');
+const cartManager = new CartManager();
 
 // Endpoint para crear un nuevo carrito
 router.post('/', async (req, res) => {
     try {
-        const newCartId = await cartManager.createCart();
+        const newCartId = await cartManager.crearCarrito();
         res.json({ message: `Nuevo carrito creado con ID ${newCartId}` });
     } catch (error) {
         console.error('Error al crear un nuevo carrito:', error);
@@ -20,10 +20,10 @@ router.get('/:cid', async (req, res) => {
     const cartId = req.params.cid;
 
     try {
-        const products = await cartManager.getCartById(cartId);
+        const carrito = await cartManager.getCarritoById(cartId);
 
-        if (products !== null) {
-            res.json({ products });
+        if (carrito !== null) {
+            res.json({ carrito });
         } else {
             res.status(404).json({ error: `no se encontró un carrito con ID ${cartId}` });
         }
@@ -37,9 +37,10 @@ router.get('/:cid', async (req, res) => {
 router.post('/:cid/product/:pid', async (req, res) => {
     const cartId = req.params.cid;
     const productId = req.params.pid;
+    const quantity = req.body.quantity || 1;
 
     try {
-        await cartManager.addProductToCart(cartId, productId);
+        await cartManager.agregarProductoAlCarrito(cartId, productId, quantity);
         res.json({ message: `Producto con ID ${productId} agregado al carrito con ID ${cartId}` });
     } catch (error) {
         console.error('Error al agregar producto al carrito:', error);
