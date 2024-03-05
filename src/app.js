@@ -5,7 +5,6 @@ const cartsRouter = require("./routes/carts.router");
 const viewsRouter = require("./routes/views.routes");
 const exphbs = require("express-handlebars");
 const socket = require("socket.io");
-const mongoose = require("mongoose");
 require("./database.js");
 
 //Configuramos handlebars
@@ -52,7 +51,7 @@ io.on("connection", async (socket) => {
 
   //Recibimos el evento agregarProducto desde el cliente:
   socket.on("agregarProducto", async (title, description, price, img, code, stock ,category, thumbnail) => {
-    await productManager.addProduct(title, description, price, img, code, stock ,category, thumbnail);
+    await productManager.addProduct({title, description, price, img, code, stock ,category, thumbnail});
 
     //Enviar lista actualizda al cliente:
     io.sockets.emit("productos", await productManager.getProduct());
@@ -79,6 +78,22 @@ io.on("connection", (socket) => {
       //Utilizamos el método emit que nos permite emitir eventos desde el servidor hacia el cliente.
       io.emit("messagesLogs", messages);
   })
-
- 
 })
+//----------------------------------------------------------------
+//Logica de agregar producto a un carrito determinado desde la vista products.handlebars(lado servidor)
+const CartManager = require('./controllers/cart-manager-db.js');
+const cartManager = new CartManager();
+
+io.on('connection', (socket) => {
+    socket.on('agregarAlCarrito', async (data) => {
+        const cartId = '65e6648ed719f7e4eda63331';
+        const productId = data.productId;
+
+        try {
+            await cartManager.agregarProductoAlCarrito(cartId, productId);
+            console.log('Producto agregado al carrito correctamente');
+        } catch (error) {
+            console.error('Error al agregar producto al carrito:', error);
+        }
+    });
+});

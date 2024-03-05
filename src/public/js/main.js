@@ -30,12 +30,15 @@ const renderProductos = (productos) => {
     })
 }
 
+//Funcion para eliminar productos:
+
 const eliminarProducto = (_id) => {
     socket.emit("eliminarProducto", _id);
 }
 
+//Funcion para Agregar productos:
+
 const agregarProducto = () => {
-    // const producto = {
         title= document.getElementById("name").value,
         description= document.getElementById("description").value,
         price= document.getElementById("price").value,
@@ -44,7 +47,6 @@ const agregarProducto = () => {
         stock= document.getElementById("stock").value,
         category= document.getElementById("category").value,
         thumbnail= document.getElementById("thumbnail").value
-    // };
 
     socket.emit("agregarProducto", title, description, price, img, code, stock ,category, thumbnail);
 }

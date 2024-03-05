@@ -1,0 +1,24 @@
+<h1>Listado de Productos:</h1>
+
+<ul>
+    {{#each payLoad}}
+    <li>{{this.title}}</li>
+    <li>{{this.price}}</li>
+    <li>{{this.description}}</li>
+    <button id="agregar-btn" onclick="agregarProductoAlCarrito('{{this._id}}')">Agregar al carrito</button>
+    <li>--------------------</li>
+    {{/each}}
+</ul>
+
+{{#if hasPrevPage}}
+    <a href={{prevLink}}>Anterior</a>
+{{/if}}
+
+{{#if hasNextPage}}
+    <a href={{nextLink}}>Siguiente</a>
+{{/if}}
+
+<p>Pagina {{currentPage}} de {{totalPages}} </p>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+<script src="/js/products.js"></script>

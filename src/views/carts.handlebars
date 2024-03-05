@@ -1,0 +1,12 @@
+<!-- carts.handlebars -->
+<h1>Listado de productos del carrito: {{id}} </h1>
+
+<ul>
+    {{#each productos}}
+    <li>Producto: {{this.title}}</li>
+    <li>Precio: {{this.price}}</li>
+    <li>Descripcion: {{this.description}}</li>
+    <li>Cantidad: {{this.quantity}} </li>
+    <li>--------------------</li>
+    {{/each}}
+</ul>

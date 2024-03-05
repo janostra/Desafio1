@@ -8,7 +8,18 @@ const productManager = new ProductManager();
 router.get("/", async (req, res) => {
     try {
         const productos = await productManager.getProduct();
-        res.render("home", {productos})
+
+        const productosMapeados = productos.map(producto => {
+            return {
+                title: producto.title,
+                description: producto.description,
+                price: producto.price,
+                stock: producto.stock,
+                _id: producto._id,
+            };
+        });
+
+        res.render("home", {productosMapeados})
     } catch (error) {
         console.error(error);
         res.status(500).send("Error interno del servidor");
