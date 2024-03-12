@@ -1,10 +1,17 @@
 const express = require('express');
 const app = express();
+const exphbs = require("express-handlebars");
+const socket = require("socket.io");
+const session = require("express-session");
+const FileStore = require("session-file-store");
+const fileStore = FileStore(session);
+const cookieParser = require("cookie-parser");
+const MongoStore = require("connect-mongo");
 const productsRouter = require("./routes/products.router");
 const cartsRouter = require("./routes/carts.router");
 const viewsRouter = require("./routes/views.routes");
-const exphbs = require("express-handlebars");
-const socket = require("socket.io");
+const userRouter = require("./routes/user.router.js");
+const sessionRouter = require("./routes/sessions.router.js");
 require("./database.js");
 
 //Configuramos handlebars
@@ -16,11 +23,23 @@ app.set("views", "./src/views");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("./src/public"));
+app.use(cookieParser());
+app.use(session({
+    secret: "secretcoder",
+    resave: true, 
+    saveUninitialized: true,
+    store: MongoStore.create({
+        mongoUrl: "mongodb+srv://janostra:4fZ2bd5ATBeIuUE1@cluster0.oyi4lr4.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=Cluster0", ttl: 100
+    })
+
+}))
 
 //Rutas
 app.use("/api/products", productsRouter);
 app.use("/api/carts", cartsRouter);
 app.use("/", viewsRouter);
+app.use("/api/users", userRouter);
+app.use("/api/sessions", sessionRouter);
 
 // Puerto en el que escuchará el servidor
 const PORT = 8080;

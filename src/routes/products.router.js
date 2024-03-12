@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const ProductManager = require('../controllers/product-manager-db.js');
 const ProductModel = require("../models/product.model.js");
+const UserModel = require("../models/user.model.js"); 
 
 // Instancia de ProductManager
 const productManager = new ProductManager();
@@ -14,6 +15,7 @@ router.get('/', async (req, res) => {
     const query = req.query.query || '{}';
     const orden = parseInt(req.query.sort, 10) || 0;
     let sort = {}; // Inicializar el objeto sort vacío por defecto
+    const user = req.session.user;
 
     // Verificar si se especificó un valor de ordenamiento
     if (orden === 1 || orden === -1) {
@@ -44,7 +46,7 @@ router.get('/', async (req, res) => {
 
       const prevLink = productos.hasPrevPage ? `/api/products?page=${productos.prevPage}&limit=${limit}&sort=${orden}&query=${query}` : null;
       const nextLink = productos.hasNextPage ? `/api/products?page=${productos.nextPage}&limit=${limit}&sort=${orden}&query=${query}` : null;
-
+  
       res.render("products", {
         payLoad: productosFinal,
         hasPrevPage: productos.hasPrevPage,
@@ -54,7 +56,8 @@ router.get('/', async (req, res) => {
         currentPage: productos.page,
         totalPages: productos.totalPages,
         prevLink: prevLink,
-        nextLink: nextLink
+        nextLink: nextLink,
+        user: user
       });
     } catch (error) {
       console.log("Error en la paginacion", error);

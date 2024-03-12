@@ -1,3 +1,11 @@
+{{#if user}}
+<h1>Bienvenido {{user.last_name}}, {{user.first_name}}</h1>
+{{#if user.admin}}
+<h2>Rol: admin</h2>
+{{else}}
+<h2>Rol: usuario</h2>
+{{/if}}
+{{/if}}
 <h1>Listado de Productos:</h1>
 
 <ul>
