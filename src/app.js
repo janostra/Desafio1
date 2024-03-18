@@ -7,6 +7,8 @@ const FileStore = require("session-file-store");
 const fileStore = FileStore(session);
 const cookieParser = require("cookie-parser");
 const MongoStore = require("connect-mongo");
+const passport = require("passport");
+const initializePassport = require("./config/passport.config.js");
 const productsRouter = require("./routes/products.router");
 const cartsRouter = require("./routes/carts.router");
 const viewsRouter = require("./routes/views.routes");
@@ -33,6 +35,9 @@ app.use(session({
     })
 
 }))
+initializePassport();
+app.use(passport.initialize());
+app.use(passport.session());
 
 //Rutas
 app.use("/api/products", productsRouter);
