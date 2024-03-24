@@ -43,7 +43,6 @@ router.post("/", passport.authenticate("register", {failureRedirect: "/failedreg
         last_name: req.user.last_name,
         age: req.user.age,
         email:req.user.email,
-        admin: false
     };
 
     req.session.login = true;

@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const userSchema = mongoose.Schema({
     first_name: {
         type: String,
-        // required: true
     },
     last_name: {
         type: String,
@@ -11,7 +10,6 @@ const userSchema = mongoose.Schema({
     },
     email: {
         type: String,
-        // required: true, 
         unique: true, 
         index: true
     },
@@ -23,8 +21,13 @@ const userSchema = mongoose.Schema({
         type: Number,
         required: true
     },
-    admin: {
-        type: Boolean,
+    cart: {
+        type: Schema.Types.ObjectId,
+        ref: 'carts'
+      },
+    role: {
+        type: String,
+        default: "user"
     }
 })
 
