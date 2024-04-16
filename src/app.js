@@ -56,6 +56,8 @@ const httpServer = app.listen(PORT, () => {
 const ProductManager = require("./controllers/product-manager-db.js");
 const MessageModel = require('./models/messages.model.js');
 const productManager = new ProductManager();
+const ProductRepository = require("./repositories/product.repository.js");
+const productRepository = new ProductRepository();
 
 //Creamos el server de socket.io:
 const io = socket(httpServer);
@@ -63,22 +65,22 @@ io.on("connection", async (socket) => {
   console.log("Un cliente se conecto al servidor.");
 
   //Enviamos el array de productos al cliente que se conectó:
-  socket.emit("productos", await productManager.getProduct())
+  socket.emit("productos", await productRepository.traerTodo())
 
   //Recibimos el evento eliminarProducto desde el cliente:
   socket.on("eliminarProducto", async (_id)=>{
-      await productManager.deleteProduct(_id);
+      await productRepository.borrarProducto(_id);
 
       //Enviar lista actualizada al cliente:
-      io.sockets.emit("productos", await productManager.getProduct());
+      io.sockets.emit("productos", await productRepository.traerTodo());
   })
 
   //Recibimos el evento agregarProducto desde el cliente:
   socket.on("agregarProducto", async (title, description, price, img, code, stock ,category, thumbnail) => {
-    await productManager.addProduct({title, description, price, img, code, stock ,category, thumbnail});
+    await productRepository.crear(title, description, price, img, code, stock ,category, thumbnail);
 
     //Enviar lista actualizda al cliente:
-    io.sockets.emit("productos", await productManager.getProduct());
+    io.sockets.emit("productos", await productRepository.traerTodo());
   })
 
 })
@@ -105,16 +107,17 @@ io.on("connection", (socket) => {
 })
 //----------------------------------------------------------------
 //Logica de agregar producto a un carrito determinado desde la vista products.handlebars(lado servidor)
-const CartManager = require('./controllers/cart-manager-db.js');
-const cartManager = new CartManager();
+const CartRepository = require('./repositories/cart.repository.js');
+const cartRepository = new CartRepository();
 
 io.on('connection', (socket) => {
     socket.on('agregarAlCarrito', async (data) => {
-        const cartId = '65e6648ed719f7e4eda63331';
+        const cartId = '661ecfa542cbc9093c149435';
         const productId = data.productId;
+        const quantity = 1;
 
         try {
-            await cartManager.agregarProductoAlCarrito(cartId, productId);
+            await cartRepository.agregarProductoAlCarrito(cartId, productId, quantity);
             console.log('Producto agregado al carrito correctamente');
         } catch (error) {
             console.error('Error al agregar producto al carrito:', error);

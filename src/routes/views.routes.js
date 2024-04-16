@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const ProductManager = require('../controllers/product-manager-db');
+const ProductRepository = require("../repositories/product.repository");
 
 // Instancia de ProductManager
-const productManager = new ProductManager();
+const productRepository = new ProductRepository();
 
 router.get("/", (req, res) => {
     res.redirect("/login")
@@ -11,8 +11,7 @@ router.get("/", (req, res) => {
 
 router.get("/home", async (req, res) => {
     try {
-        const productos = await productManager.getProduct();
-
+        const productos = await productRepository.traerTodo();
         const productosMapeados = productos.map(producto => {
             return {
                 title: producto.title,
