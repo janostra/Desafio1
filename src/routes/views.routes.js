@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const ProductRepository = require("../repositories/product.repository");
+const {passportCall, authorization} = require("../utils/util.js");
+const UserDTO = require("../dto/user.dto.js");
 
 // Instancia de ProductManager
 const productRepository = new ProductRepository();
@@ -30,7 +32,7 @@ router.get("/home", async (req, res) => {
 })
 
 
-router.get("/realtimeproducts", async (req, res) => {
+router.get("/realtimeproducts", passportCall("session"), authorization("admin"),async (req, res) => {
     try {
         res.render("realtimeproducts");
     } catch (error) {
@@ -39,7 +41,7 @@ router.get("/realtimeproducts", async (req, res) => {
     }
 })
 
-router.get("/chat", async (req, res) => {
+router.get("/chat", passportCall("session"), authorization("user"), async (req, res) => {
     try {
         res.render("chat");
     } catch (error) {
@@ -71,5 +73,11 @@ router.get("/profile", (req, res) => {
     }
     res.render("profile", { user: req.session.user });
 });
+
+
+router.get("/current", passportCall("session"), authorization("user"), (req, res) => {
+    const userdto = new UserDTO(req.user.first_name, req.user.last_name, req.user.age, req.user.role);
+    res.send(userdto);
+  })
 
 module.exports = router;

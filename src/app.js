@@ -31,7 +31,7 @@ app.use(session({
     resave: true, 
     saveUninitialized: true,
     store: MongoStore.create({
-        mongoUrl: "mongodb+srv://janostra:4fZ2bd5ATBeIuUE1@cluster0.oyi4lr4.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=Cluster0", ttl: 100
+        mongoUrl: "mongodb+srv://janostra:4fZ2bd5ATBeIuUE1@cluster0.oyi4lr4.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=Cluster0", ttl: 100000
     })
 
 }))
@@ -53,9 +53,7 @@ const httpServer = app.listen(PORT, () => {
 });
 
 //Debo obtener el array:
-const ProductManager = require("./controllers/product-manager-db.js");
 const MessageModel = require('./models/messages.model.js');
-const productManager = new ProductManager();
 const ProductRepository = require("./repositories/product.repository.js");
 const productRepository = new ProductRepository();
 
@@ -72,6 +70,12 @@ io.on("connection", async (socket) => {
       await productRepository.borrarProducto(_id);
 
       //Enviar lista actualizada al cliente:
+      io.sockets.emit("productos", await productRepository.traerTodo());
+  })
+
+  socket.on("actualizarProducto", async (_id, nuevoProducto)=> {
+      await productRepository.actualizarProducto(_id, nuevoProducto);
+
       io.sockets.emit("productos", await productRepository.traerTodo());
   })
 
@@ -112,7 +116,8 @@ const cartRepository = new CartRepository();
 
 io.on('connection', (socket) => {
     socket.on('agregarAlCarrito', async (data) => {
-        const cartId = '661ecfa542cbc9093c149435';
+      console.log(data);
+        const cartId = data.cartId
         const productId = data.productId;
         const quantity = 1;
 

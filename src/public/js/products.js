@@ -1,8 +1,10 @@
 const socket = io();
 
 const agregarProductoAlCarrito = (productId) => {
-    socket.emit('agregarAlCarrito', { productId });
-    console.log('Producto con id: ' + productId + ' cargado correctamente');
+    const cartIdElement = document.getElementById('cart-id');
+    const cartId = cartIdElement.dataset.cartId;
+    socket.emit('agregarAlCarrito', { productId, cartId });
+    console.log('Producto con id: ' + productId + ' cargado al carrito con id:' + cartId + 'correctamente');
 }
 
 

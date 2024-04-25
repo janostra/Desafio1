@@ -19,13 +19,22 @@ const renderProductos = (productos) => {
                         <p> ${item._id} </p>
                         <p> ${item.title} </p>
                         <p> ${item.price} </p>
-                        <button> Eliminar </button>
+                        <p> ${item.stock} </p>
+                        <button id="eliminar-btn-${item._id}"> Eliminar </button>
+                        <button id="actualizar-btn-${item._id}"> Actualizar </button>
                         `
         listaProductos.appendChild(card);
 
-        card.querySelector("button").addEventListener("click", ()=> {
+        const eliminarBtn = document.getElementById(`eliminar-btn-${item._id}`);
+        const actualizarBtn = document.getElementById(`actualizar-btn-${item._id}`);
+
+        eliminarBtn.addEventListener("click", ()=> {
             eliminarProducto(item._id);
         })
+
+        actualizarBtn.addEventListener("click", () => {
+            actualizarProducto(item);
+        });
 
     })
 }
@@ -56,3 +65,20 @@ document.getElementById("btnEnviar").addEventListener("click", ()=> {
     agregarProducto();
 })
 
+//actualizar producto
+
+const actualizarProducto = (item) => {
+
+    nuevoProducto = {
+        title: document.getElementById("name").value || item.title,
+        description: document.getElementById("description").value || item.description,
+        price: document.getElementById("price").value || item.price,
+        img: document.getElementById("img").value || item.img,
+        code: document.getElementById("code").value || item.code,
+        stock: document.getElementById("stock").value || item.stock,
+        category: document.getElementById("category").value || item.category,
+        thumbnail: document.getElementById("thumbnail").value || item.thumbnail
+    }
+
+    socket.emit("actualizarProducto", item._id, nuevoProducto);
+}

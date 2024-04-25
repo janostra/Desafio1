@@ -1,10 +1,8 @@
 {{#if user}}
+<div id="cart-id" data-cart-id="{{user.cart}}" style="display: none;"></div>
 <h1>Bienvenido {{user.last_name}}, {{user.first_name}}</h1>
-{{#if user.admin}}
-<h2>Rol: admin</h2>
-{{else}}
-<h2>Rol: usuario</h2>
-{{/if}}
+<h2>Rol: {{user.role}}</h2>
+<h3>id carrito: {{user.cart}}</h3>
 {{/if}}
 <h1>Listado de Productos:</h1>
 
@@ -13,6 +11,7 @@
     <li>{{this.title}}</li>
     <li>{{this.price}}</li>
     <li>{{this.description}}</li>
+    <li>{{this.stock}}</li>
     <button id="agregar-btn" onclick="agregarProductoAlCarrito('{{this._id}}')">Agregar al carrito</button>
     <li>--------------------</li>
     {{/each}}

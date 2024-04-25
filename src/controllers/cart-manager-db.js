@@ -1,5 +1,10 @@
+const UserModel = require("../models/user.model.js");
 const CartRepository = require("../repositories/cart.repository.js");
 const cartRepository = new CartRepository();
+const TicketRepository = require ("../repositories/ticket.repository.js");
+const UserRepository = require("../repositories/user.repository.js");
+const ticketRepository = new TicketRepository();
+const userRepository = new UserRepository();
 
 class CartManager {
 
@@ -140,25 +145,44 @@ class CartManager {
     }
 
     async deleteAllProducts (req, res) {
-    const cartId = req.params.cid;
-    try {
-        // Buscar el carrito por su ID
-        const cart = await cartRepository.traerCarritoPorId(cartId);
-
-        // Verificar si el carrito existe
-        if (!cart) {
-            return res.status(404).json({ error: `No se encontró un carrito con ID ${cartId}` });
+        const cartId = req.params.cid;
+        try {
+            // Buscar el carrito por su ID
+            const cart = await cartRepository.traerCarritoPorId(cartId);
+        
+            // Verificar si el carrito existe
+            if (!cart) {
+                return res.status(404).json({ error: `No se encontró un carrito con ID ${cartId}` });
+            }
+        
+            // Eliminar todos los productos del carrito
+            cart.products = [];
+        
+            // Guardar los cambios
+            await cartRepository.guardarCarrito(cart);
+            res.json({ message: `Todos los productos del carrito con ID ${cartId} han sido eliminados` });
+        } catch (error) {
+            res.status(500).json({ error: 'Error al eliminar todos los productos del carrito' });
         }
-
-        // Eliminar todos los productos del carrito
-        cart.products = [];
-
-        // Guardar los cambios
-        await cartRepository.guardarCarrito(cart);
-        res.json({ message: `Todos los productos del carrito con ID ${cartId} han sido eliminados` });
-    } catch (error) {
-        res.status(500).json({ error: 'Error al eliminar todos los productos del carrito' });
     }
+
+
+    //preguntar porque no me toma user= req.session.user
+    async purchaseCart(req, res) {
+        const cartId = req.params.cid;
+        const user = await userRepository.buscarUsuarioPorCarrito(cartId);
+        const carrito = await cartRepository.traerCarritoPorId(cartId);
+        const productos = carrito.products
+        try {
+            const ticket = await ticketRepository.crearTicket(user);
+            carrito.products = [];
+            await cartRepository.guardarCarrito(carrito);
+            await cartRepository.restarStockProductos(productos);
+            const { code, purchase_datetime, amount, purchaser } = ticket;
+            res.render("ticket", { code, purchase_datetime, amount, purchaser });
+        } catch (error) {
+            res.status(500).json({ error: 'Error al realizar compra' });
+        }
     }
 
 }

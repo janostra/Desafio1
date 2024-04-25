@@ -11,6 +11,10 @@ const GitHubStrategy = require("passport-github2");
 //Me traigo el UserModel y las funciones de bcrypt. 
 const UserModel = require("../models/user.model.js");
 const { createHash, isValidPassword } = require("../utils/hashbcryp.js");
+const UserRepository = require("../repositories/user.repository.js");
+const userRepository = new UserRepository;
+const CartRepository = require("../repositories/cart.repository.js");
+const cartRepository = new CartRepository;
 
 
 const LocalStrategy = local.Strategy; 
@@ -25,19 +29,23 @@ const initializePassport = () => {
 
         try {
             //Verificamos si ya existe un registro con ese mail
-            let user = await UserModel.findOne({email:email});
+            let user = await userRepository.buscarUsuario(email);
             if(user) return done(null, false);
             //Si no existe, voy a crear un registro nuevo: 
+
+            // Crear un nuevo carrito para el usuario
+            const cart = await cartRepository.crearCarrito();
             let newUser = {
                 first_name,
                 last_name,
                 email,
                 age,
                 password: createHash(password),
-                admin: false
+                cart: cart._id
             }
 
-            let result = await UserModel.create(newUser);
+            let result = await userRepository.crearUsuario(newUser);
+            
             //Si todo resulta bien, podemos mandar done con el usuario generado. 
             return done(null, result);
         } catch (error) {

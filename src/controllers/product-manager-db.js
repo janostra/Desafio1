@@ -44,7 +44,7 @@ class ProductManager {
       const orden = parseInt(req.query.sort, 10) || 0;
       let sort = {}; // Inicializar el objeto sort vacío por defecto
       const user = req.session.user;
-  
+      
       // Verificar si se especificó un valor de ordenamiento
       if (orden === 1 || orden === -1) {
           sort = { "price": orden };
@@ -73,7 +73,7 @@ class ProductManager {
   
         const prevLink = productos.hasPrevPage ? `/api/products?page=${productos.prevPage}&limit=${limit}&sort=${orden}&query=${query}` : null;
         const nextLink = productos.hasNextPage ? `/api/products?page=${productos.nextPage}&limit=${limit}&sort=${orden}&query=${query}` : null;
-    
+        
         res.render("products", {
           payLoad: productosFinal,
           hasPrevPage: productos.hasPrevPage,

@@ -26,5 +26,8 @@ router.put('/:cid/product/:pid', cartManager.updateQuantityFromProduct);
 // Endpoint para borrar todos los productos
 router.delete('/:cid', cartManager.deleteAllProducts);
 
+//Endpoint para terminar la compra
+router.post('/:cid/purchase', cartManager.purchaseCart);
+
 
 module.exports = router;

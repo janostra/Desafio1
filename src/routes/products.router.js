@@ -1,12 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const ProductManager = require('../controllers/product-manager-db.js');
+const {passportCall, authorization} = require("../utils/util.js");
 
 // Instancia de ProductManager
 const productManager = new ProductManager();
 
   // Endpoint para obtener todos los productos con límite opcional
-  router.get('/', productManager.getProductPaginate);
+  router.get('/', passportCall("session"), authorization("user"), productManager.getProductPaginate);
   
   // Endpoint para obtener un producto por ID
   router.get('/:id', productManager.getProductById);
