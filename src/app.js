@@ -15,6 +15,8 @@ const viewsRouter = require("./routes/views.routes");
 const userRouter = require("./routes/user.router.js");
 const sessionRouter = require("./routes/sessions.router.js");
 require("./database.js");
+const manejadorError = require("./middleware/error.js");
+
 
 //Configuramos handlebars
 app.engine("handlebars", exphbs.engine());
@@ -33,8 +35,11 @@ app.use(session({
     store: MongoStore.create({
         mongoUrl: "mongodb+srv://janostra:4fZ2bd5ATBeIuUE1@cluster0.oyi4lr4.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=Cluster0", ttl: 100000
     })
+    
 
 }))
+
+app.use(manejadorError);
 initializePassport();
 app.use(passport.initialize());
 app.use(passport.session());

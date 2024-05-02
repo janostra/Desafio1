@@ -1,4 +1,5 @@
 const passport = require("passport");
+const {faker} = require("@faker-js/faker");
 
 const passportCall = (strategy) => {
     return (req, res, next) => {
@@ -39,9 +40,25 @@ function generarCodigoUnico() {
     return codigoUnico;
 }
 
+const generarProductos = () => {
+    return {
+        id: faker.database.mongodbObjectId(), 
+        title: faker.commerce.productName(),
+        price: faker.commerce.price(),
+        stock: parseInt(faker.string.numeric()), 
+        description: faker.commerce.productDescription(),
+        img: faker.image.avatar(),
+        code: faker.string.alphanumeric(16),
+        thumbail: faker.image.url(),
+        category: faker.commerce.productAdjective()
+
+    }
+}
+
 
 module.exports = {
     passportCall,
     authorization,
-    generarCodigoUnico
+    generarCodigoUnico,
+    generarProductos
 }

@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const ProductRepository = require("../repositories/product.repository");
-const {passportCall, authorization} = require("../utils/util.js");
+const {passportCall, authorization, generarProductos} = require("../utils/util.js");
 const UserDTO = require("../dto/user.dto.js");
 
 // Instancia de ProductManager
@@ -79,5 +79,14 @@ router.get("/current", passportCall("session"), authorization("user"), (req, res
     const userdto = new UserDTO(req.user.first_name, req.user.last_name, req.user.age, req.user.role);
     res.send(userdto);
   })
+
+
+router.get('/mockingproducts', (req,res) => {
+    const productos = [];
+    for(let i = 0; i < 100; i++) {
+        productos.push(generarProductos());
+    }
+    res.json(productos);
+})
 
 module.exports = router;
