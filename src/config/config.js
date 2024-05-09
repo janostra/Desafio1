@@ -8,7 +8,8 @@ dotenv.config({
 });
 
 const configObject = {
-    mongo_url: process.env.MONGO_URL
+    mongo_url: process.env.MONGO_URL,
+    logger_level: process.env.LOG_LEVEL
 }
 
 module.exports = configObject;

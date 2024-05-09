@@ -16,6 +16,7 @@ const userRouter = require("./routes/user.router.js");
 const sessionRouter = require("./routes/sessions.router.js");
 require("./database.js");
 const manejadorError = require("./middleware/error.js");
+const addLogger = require("./utils/logger.js");
 
 
 //Configuramos handlebars
@@ -35,9 +36,8 @@ app.use(session({
     store: MongoStore.create({
         mongoUrl: "mongodb+srv://janostra:4fZ2bd5ATBeIuUE1@cluster0.oyi4lr4.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=Cluster0", ttl: 100000
     })
-    
-
 }))
+app.use(addLogger);
 
 app.use(manejadorError);
 initializePassport();
@@ -50,6 +50,13 @@ app.use("/api/carts", cartsRouter);
 app.use("/", viewsRouter);
 app.use("/api/users", userRouter);
 app.use("/api/sessions", sessionRouter);
+app.get("/loggerTest", (req, res) => {
+  req.logger.error("Vamos a morir"); 
+  req.logger.warning("Cuidado! Hombre radiactivo!"); 
+  req.logger.info("Estamos navegando la app");
+
+  res.send("Logs generados!");
+})
 
 // Puerto en el que escuchará el servidor
 const PORT = 8080;

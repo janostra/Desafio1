@@ -14,13 +14,13 @@ class CartManager {
             res.status(200).send({ message: `Nuevo carrito creado con ID ${carrito._id}` });
         } catch (error) {
             res.status(500).json("error del servidor");
+            req.logger.error("error del serivdor");
         }
     }
 
     async getCarritoById(req, res) {
 
         const cartId = req.params.cid;
-        console.log(cartId);
 
         try {
             const carrito = await cartRepository.traerCarritoPorId(cartId);
@@ -41,9 +41,10 @@ class CartManager {
             }
         } catch (error) {
             res.status(500).json({ error: 'Error al obtener los productos del carrito' });
+            req.logger.error("Error al obtener los productos del carrito");
         }
     }
-//hay que arreglar
+
     async addProductToCart(req, res) {
 
         const cartId = req.params.cid;
@@ -55,6 +56,7 @@ class CartManager {
             res.json({ message: `Producto con ID ${productId} agregado al carrito con ID ${cartId}` });
         } catch (error) {
             res.status(500).json({ error: 'Error al agregar producto al carrito' });
+            req.logger.error("Error al agregar producto al carrito");
         }
     }
 
@@ -84,8 +86,10 @@ class CartManager {
             res.json({ message: `Producto con ID ${productId} eliminado del carrito con ID ${cartId}` });
         } catch (error) {
             res.status(500).json({ error: 'Error al eliminar producto del carrito' });
+            req.logger.error("Error al eliminar producto del carrito");
         }
     }
+    
 
     async updateProductsFromCart(req, res){
         const cartId = req.params.cid;
@@ -108,6 +112,7 @@ class CartManager {
             res.json({ message: `Carrito con ID ${cartId} actualizado correctamente` });
         } catch (error) {
             res.status(500).json({ error: 'Error al actualizar el carrito' });
+            req.logger.error("Error al actualizar el carrito");
         }
     }
 
@@ -141,6 +146,7 @@ class CartManager {
             res.json({ message: `Cantidad del producto con ID ${productId} actualizada en el carrito con ID ${cartId}` });
         } catch (error) {
             res.status(500).json({ error: 'Error al actualizar la cantidad del producto en el carrito' });
+            req.logger.error("Error al actualizar la cantidad del producto en el carrito");
         }
     }
 
@@ -163,6 +169,7 @@ class CartManager {
             res.json({ message: `Todos los productos del carrito con ID ${cartId} han sido eliminados` });
         } catch (error) {
             res.status(500).json({ error: 'Error al eliminar todos los productos del carrito' });
+            req.logger.error("Error al eliminar todos los productos del carrito");
         }
     }
 
@@ -182,6 +189,7 @@ class CartManager {
             res.render("ticket", { code, purchase_datetime, amount, purchaser });
         } catch (error) {
             res.status(500).json({ error: 'Error al realizar compra' });
+            req.logger.error("Error al realizar compra");
         }
     }
 
