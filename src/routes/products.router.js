@@ -7,7 +7,7 @@ const {passportCall, authorization} = require("../utils/util.js");
 const productManager = new ProductManager();
 
   // Endpoint para obtener todos los productos con límite opcional
-  router.get('/', passportCall("session"), authorization("user"), productManager.getProductPaginate);
+  router.get('/', passportCall("session"), authorization(["user","premium"]), productManager.getProductPaginate);
   
   // Endpoint para obtener un producto por ID
   router.get('/:id', productManager.getProductById);

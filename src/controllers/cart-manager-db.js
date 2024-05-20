@@ -1,10 +1,12 @@
 const UserModel = require("../models/user.model.js");
 const CartRepository = require("../repositories/cart.repository.js");
+const ProductRepository = require("../repositories/product.repository.js");
 const cartRepository = new CartRepository();
 const TicketRepository = require ("../repositories/ticket.repository.js");
 const UserRepository = require("../repositories/user.repository.js");
 const ticketRepository = new TicketRepository();
 const userRepository = new UserRepository();
+const productRepository = new ProductRepository();
 
 class CartManager {
 
@@ -51,7 +53,16 @@ class CartManager {
         const productId = req.params.pid;
         const quantity = req.body.quantity || 1;
 
+        const product = await productRepository.traerProductoPorId(productId);
+
+        if (!product) {
+            return res.status(404).json({ message: 'Producto no encontrado' });
+        }
+
         try {
+            if (req.user.role === 'premium' && product.owner === req.user.email) {
+                return res.status(403).json({ message: 'No puedes agregar tu propio producto al carrito.' });
+            }
             await cartRepository.agregarProductoAlCarrito(cartId, productId, quantity);
             res.json({ message: `Producto con ID ${productId} agregado al carrito con ID ${cartId}` });
         } catch (error) {

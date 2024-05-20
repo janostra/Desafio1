@@ -92,8 +92,8 @@ io.on("connection", async (socket) => {
   })
 
   //Recibimos el evento agregarProducto desde el cliente:
-  socket.on("agregarProducto", async (title, description, price, img, code, stock ,category, thumbnail) => {
-    await productRepository.crear(title, description, price, img, code, stock ,category, thumbnail);
+  socket.on("agregarProducto", async (title, description, price, img, code, stock ,category, thumbnail, owner) => {
+    await productRepository.crear(title, description, price, img, code, stock ,category, thumbnail, owner);
 
     //Enviar lista actualizda al cliente:
     io.sockets.emit("productos", await productRepository.traerTodo());
@@ -122,22 +122,5 @@ io.on("connection", (socket) => {
   })
 })
 //----------------------------------------------------------------
-//Logica de agregar producto a un carrito determinado desde la vista products.handlebars(lado servidor)
-const CartRepository = require('./repositories/cart.repository.js');
-const cartRepository = new CartRepository();
-
-io.on('connection', (socket) => {
-    socket.on('agregarAlCarrito', async (data) => {
-      console.log(data);
-        const cartId = data.cartId
-        const productId = data.productId;
-        const quantity = 1;
-
-        try {
-            await cartRepository.agregarProductoAlCarrito(cartId, productId, quantity);
-            console.log('Producto agregado al carrito correctamente');
-        } catch (error) {
-            console.error('Error al agregar producto al carrito:', error);
-        }
-    });
-});
+//responsabilidades
+//actualizar producto

@@ -18,9 +18,9 @@ const passportCall = (strategy) => {
 }
 
 
-const authorization = (role) => {
+const authorization = (roles) => {
     return async (req, res, next) => {
-        if(req.user.role !== role) {
+        if(!roles.includes(req.user.role)) {
             return res.status(403).send({message: "No tenes permisooo amiguitooo"});
         }
         next();

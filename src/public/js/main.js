@@ -1,5 +1,8 @@
 //Lado del cliente
 const socket = io();
+const role = document.getElementById("role").textContent;
+const email = document.getElementById("email").textContent;
+
 
 socket.on("productos", (data) => {
     renderProductos(data);
@@ -29,11 +32,29 @@ const renderProductos = (productos) => {
         const actualizarBtn = document.getElementById(`actualizar-btn-${item._id}`);
 
         eliminarBtn.addEventListener("click", ()=> {
-            eliminarProducto(item._id);
+            if (role === "premium" && item.owner === email) {
+                eliminarProducto(item._id);
+            } else if (role === "admin") {
+                eliminarProducto(item._id);
+            } else {
+                Swal.fire({
+                    title: "Error",
+                    text: "No tenes permiso para borrar ese producto",
+                })
+            }
         })
 
         actualizarBtn.addEventListener("click", () => {
-            actualizarProducto(item);
+            if (role === "premium" && item.owner === email) {
+                actualizarProducto(item._id);
+            } else if (role === "admin") {
+                actualizarProducto(item._id);
+            } else {
+                Swal.fire({
+                    title: "Error",
+                    text: "No tenes permiso para actualizar ese producto",
+                })
+            }
         });
 
     })
@@ -48,6 +69,12 @@ const eliminarProducto = (_id) => {
 //Funcion para Agregar productos:
 
 const agregarProducto = () => {
+
+    const role = document.getElementById("role").textContent;
+    const email = document.getElementById("email").textContent;
+
+    const owner = role === "premium" ? email : "admin";
+
         title= document.getElementById("name").value,
         description= document.getElementById("description").value,
         price= document.getElementById("price").value,
@@ -57,7 +84,7 @@ const agregarProducto = () => {
         category= document.getElementById("category").value,
         thumbnail= document.getElementById("thumbnail").value
 
-    socket.emit("agregarProducto", title, description, price, img, code, stock ,category, thumbnail);
+    socket.emit("agregarProducto", title, description, price, img, code, stock ,category, thumbnail, owner);
 }
 
 //Agregamos productos desde el formulario
@@ -77,7 +104,8 @@ const actualizarProducto = (item) => {
         code: document.getElementById("code").value || item.code,
         stock: document.getElementById("stock").value || item.stock,
         category: document.getElementById("category").value || item.category,
-        thumbnail: document.getElementById("thumbnail").value || item.thumbnail
+        thumbnail: document.getElementById("thumbnail").value || item.thumbnail,
+        owner: owner
     }
 
     socket.emit("actualizarProducto", item._id, nuevoProducto);

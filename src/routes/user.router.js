@@ -4,6 +4,9 @@ const passport = require("passport");
 const { generarInfoError } = require("../services/errors/info.js");
 const { EErrors } = require("../services/errors/enums.js");
 const CustomError = require("../services/errors/custom-error.js");
+const UserManager = require("../controllers/user-manager-db.js");
+
+const userManager = new UserManager();
 
 
 router.post("/", passport.authenticate("register", {failureRedirect: "/failedregister"}), async (req, res) => {
@@ -54,5 +57,9 @@ router.post("/usererror", async (req, res, next) => {
         next(error);
     }
 })
+
+router.post("/requestPasswordReset", userManager.requestPasswordReset); // Nueva ruta
+router.post('/reset-password', userManager.resetPassword);
+router.put("/premium/:uid", userManager.cambiarRolPremium);
 
 module.exports = router; 

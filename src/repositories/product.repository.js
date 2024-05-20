@@ -20,7 +20,7 @@ class ProductRepository {
         }
     }
 
-    async crear(title, description, price, img, code, stock, category, thumbnail) {
+    async crear(title, description, price, img, code, stock, category, thumbnail, owner) {
         const nuevoProducto = new ProductModel ({
             title:title,
             description:description,
@@ -30,7 +30,8 @@ class ProductRepository {
             stock:stock,
             category:category,
             thumbnail: thumbnail || [],
-            status: true
+            status: true,
+            owner:owner
         });
         
         try {

@@ -12,20 +12,20 @@
     <li>{{this.price}}</li>
     <li>{{this.description}}</li>
     <li>{{this.stock}}</li>
-    <button id="agregar-btn" onclick="agregarProductoAlCarrito('{{this._id}}')">Agregar al carrito</button>
+    <form action="/api/carts/{{../user.cart}}/product/{{this._id}}" method="POST">
+        <button class="btnMios" type="submit">Agregar al Carrito</button>
+    </form>
     <li>--------------------</li>
     {{/each}}
 </ul>
 
 {{#if hasPrevPage}}
-    <a href={{prevLink}}>Anterior</a>
+<a href={{prevLink}}>Anterior</a>
 {{/if}}
 
 {{#if hasNextPage}}
-    <a href={{nextLink}}>Siguiente</a>
+<a href={{nextLink}}>Siguiente</a>
 {{/if}}
 
 <p>Pagina {{currentPage}} de {{totalPages}} </p>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
-<script src="/js/products.js"></script>

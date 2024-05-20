@@ -4,7 +4,7 @@ const productRepository = new ProductRepository;
 
 class cartRepository {
     async crearCarrito() {
-        const nuevoCarrito = new cartModel({products: []});
+        const nuevoCarrito = new cartModel({ products: [] });
         try {
             return await cartModel.create(nuevoCarrito);
         } catch (error) {
@@ -13,30 +13,41 @@ class cartRepository {
     }
 
     async traerCarritoPorId(_id) {
-       try {
-        const carrito = await cartModel.findById(_id).populate('products.product');
-        return carrito;
-       } catch (error) {
-        console.error("Error traer carrito ", error);
-       }
+        try {
+            const carrito = await cartModel.findById(_id).populate('products.product');
+            return carrito;
+        } catch (error) {
+            console.error("Error traer carrito ", error);
+        }
     }
 
-    async agregarProductoAlCarrito(cartId, productId, quantity) {
+    async agregarProductoAlCarrito(cartId, productId, quantity = 1) { // Valor predeterminado de quantity es 1
         try {
             const carrito = await this.traerCarritoPorId(cartId);
-            const existeProducto = carrito.products.find(item => item.product._id.toString() === productId.toString());
+            if (!carrito) {
+                throw new Error("Carrito no encontrado");
+            }
+    
             const producto = await productRepository.traerProductoPorId(productId);
-
-                if (existeProducto){
-                    existeProducto.quantity += quantity;
-                } else {
-                    carrito.products.push({product: productId, quantity});
+            if (!producto) {
+                throw new Error("Producto no encontrado");
+            }
+    
+            const existeProducto = carrito.products.find(item => item.product._id.toString() === productId.toString());
+            
+            if (existeProducto) {
+                if (existeProducto.quantity + quantity > producto.stock) {
+                    throw new Error("No hay suficiente stock para agregar al carrito");
                 }
-                if (existeProducto.quantity > producto.stock) {
-                    throw new error ("No hay sufiente stock para agregar al carrito");
+                existeProducto.quantity += quantity;
+            } else {
+                if (quantity > producto.stock) {
+                    throw new Error("No hay suficiente stock para agregar al carrito");
                 }
-                await this.guardarCarrito(carrito);
-
+                carrito.products.push({ product: productId, quantity });
+            }
+    
+            await this.guardarCarrito(carrito);
         } catch (error) {
             console.error("Error agregar producto al carrito ", error);
         }
@@ -52,7 +63,7 @@ class cartRepository {
         }
     }
 
-    async obtenerTotalCarrito (cartId) {
+    async obtenerTotalCarrito(cartId) {
         try {
             let total = 0;
             const carrito = await this.traerCarritoPorId(cartId);
@@ -79,7 +90,7 @@ class cartRepository {
             console.error("Error al restar el stock de los productos:", error);
         }
     }
-    
+
 }
 
 module.exports = cartRepository;

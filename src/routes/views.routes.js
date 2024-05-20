@@ -32,16 +32,17 @@ router.get("/home", async (req, res) => {
 })
 
 
-router.get("/realtimeproducts", passportCall("session"), authorization("admin"),async (req, res) => {
+router.get("/realtimeproducts", passportCall("session"), authorization(["admin","premium"]),async (req, res) => {
+    const user = req.user;
     try {
-        res.render("realtimeproducts");
+        res.render("realtimeproducts",{role: user.role, email: user.email});
     } catch (error) {
         console.error(error);
         res.status(500).send("Error interno del servidor");
     }
 })
 
-router.get("/chat", passportCall("session"), authorization("user"), async (req, res) => {
+router.get("/chat", passportCall("session"), authorization(["user","premium"]), async (req, res) => {
     try {
         res.render("chat");
     } catch (error) {
@@ -75,7 +76,7 @@ router.get("/profile", (req, res) => {
 });
 
 
-router.get("/current", passportCall("session"), authorization("user"), (req, res) => {
+router.get("/current", passportCall("session"), authorization(["user", "premium"]), (req, res) => {
     const userdto = new UserDTO(req.user.first_name, req.user.last_name, req.user.age, req.user.role);
     res.send(userdto);
   })
@@ -88,5 +89,23 @@ router.get('/mockingproducts', (req,res) => {
     }
     res.json(productos);
 })
+
+
+router.get("/reset-password", async (req, res) => {
+    res.render("passwordreset");
+});
+router.get("/password", async (req, res) => {
+    res.render("passwordcambio");
+});
+router.get("/confirmacion-envio", async (req, res) => {
+    res.render("confirmacion-envio");
+});
+
+
+
+
+
+
+
 
 module.exports = router;
