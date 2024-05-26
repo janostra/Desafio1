@@ -1,0 +1,250 @@
+paths:
+  /api/products:
+    get:
+      summary: Obtener todos los productos con límite opcional
+      tags:
+        - Products
+      security:
+        - sessionAuth: []
+      responses:
+        "200":
+          description: Productos obtenidos correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+        "500":
+          description: Error interno del servidor
+    post:
+      summary: Agregar un nuevo producto
+      tags: 
+        - Products
+      requestBody:
+        required: true
+        content: 
+          application/json:
+            schema: 
+              $ref: "#/components/requestBodies/AddProduct"
+      responses:
+        "201":
+          description: Producto creado correctamente
+        "500":
+          description: Error interno del servidor
+  /api/products/{id}:
+    get:
+      summary: Obtener un producto por ID
+      tags: 
+        - Products
+      parameters: 
+      - name: id
+        in: path
+        required: true
+        description: ID del producto a buscar
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Producto encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "404":
+          description: Producto no encontrado
+        "500":
+          description: Error interno del servidor
+    put:
+      summary: Actualizar un producto por ID
+      tags: 
+        - Products
+      parameters: 
+      - name: id
+        in: path
+        required: true
+        description: ID del producto a actualizar
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content: 
+          application/json:
+            schema:
+              $ref: "#/components/requestBodies/UpdateProduct"
+      responses:
+        "200":
+          description: Producto actualizado correctamente
+        "404":
+          description: Producto no encontrado
+        "500":
+          description: Error interno del servidor
+    delete:
+      summary: Eliminar un producto por ID
+      tags: 
+        - Products
+      parameters: 
+      - name: id
+        in: path
+        required: true
+        description: ID del producto a eliminar
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Producto eliminado correctamente
+        "404":
+          description: Producto no encontrado
+        "500":
+          description: Error interno del servidor
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties: 
+        _id: 
+          type: string
+          description: ID autogenerado por MongoDB
+        title: 
+          type: string
+          description: Título del producto
+        description: 
+          type: string
+          description: Descripción del producto
+        price:
+          type: number
+          description: Precio del producto
+        img:
+          type: string
+          description: URL de la imagen del producto
+        code:
+          type: string
+          description: Código único del producto
+        stock:
+          type: number
+          description: Stock disponible del producto
+        category:
+          type: string
+          description: Categoría del producto
+        thumbnail:
+          type: array
+          items:
+            type: string
+          description: Imágenes en miniatura del producto
+        status:
+          type: boolean
+          description: Estado del producto
+        owner:
+          type: string
+          description: Dueño del producto
+      example: 
+        _id: "60c72b2f9b1e8a4f7f8f9b2e"
+        title: "Producto de ejemplo"
+        description: "Descripción del producto de ejemplo"
+        price: 99.99
+        img: "http://example.com/img.jpg"
+        code: "ABC123"
+        stock: 10
+        category: "Ejemplo"
+        thumbnail: ["http://example.com/thumb1.jpg", "http://example.com/thumb2.jpg"]
+        status: true
+        owner: "admin"
+  requestBodies: 
+    AddProduct:
+      type: object
+      properties: 
+        title: 
+          type: string
+          description: Título del producto
+        description: 
+          type: string
+          description: Descripción del producto
+        price:
+          type: number
+          description: Precio del producto
+        img:
+          type: string
+          description: URL de la imagen del producto
+        code:
+          type: string
+          description: Código único del producto
+        stock:
+          type: number
+          description: Stock disponible del producto
+        category:
+          type: string
+          description: Categoría del producto
+        thumbnail:
+          type: array
+          items:
+            type: string
+          description: Imágenes en miniatura del producto
+        status:
+          type: boolean
+          description: Estado del producto
+        owner:
+          type: string
+          description: Dueño del producto
+      example: 
+        title: "Nuevo producto"
+        description: "Descripción del nuevo producto"
+        price: 49.99
+        img: "http://example.com/new_img.jpg"
+        code: "XYZ789"
+        stock: 5
+        category: "Nuevo"
+        thumbnail: ["http://example.com/new_thumb1.jpg"]
+        status: true
+        owner: "admin"
+    UpdateProduct:
+      type: object
+      properties: 
+        title: 
+          type: string
+          description: Título del producto
+        description: 
+          type: string
+          description: Descripción del producto
+        price:
+          type: number
+          description: Precio del producto
+        img:
+          type: string
+          description: URL de la imagen del producto
+        code:
+          type: string
+          description: Código único del producto
+        stock:
+          type: number
+          description: Stock disponible del producto
+        category:
+          type: string
+          description: Categoría del producto
+        thumbnail:
+          type: array
+          items:
+            type: string
+          description: Imágenes en miniatura del producto
+        status:
+          type: boolean
+          description: Estado del producto
+        owner:
+          type: string
+          description: Dueño del producto
+      example: 
+        title: "Producto actualizado"
+        description: "Descripción del producto actualizado"
+        price: 59.99
+        img: "http://example.com/updated_img.jpg"
+        code: "LMN456"
+        stock: 15
+        category: "Actualizado"
+        thumbnail: ["http://example.com/updated_thumb1.jpg"]
+        status: true
+        owner: "user"
+securitySchemes:
+  sessionAuth:
+    type: http
+    scheme: bearer
+    bearerFormat: JWT

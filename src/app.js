@@ -14,10 +14,29 @@ const cartsRouter = require("./routes/carts.router");
 const viewsRouter = require("./routes/views.routes");
 const userRouter = require("./routes/user.router.js");
 const sessionRouter = require("./routes/sessions.router.js");
+const swaggerJSDoc = require("swagger-jsdoc");
+const swaggerUiExpress = require("swagger-ui-express");
 require("./database.js");
 const manejadorError = require("./middleware/error.js");
 const addLogger = require("./utils/logger.js");
 
+
+const swaggerOptions = {
+  definition: {
+      openapi: "3.0.1",
+      info: {
+          title: "Documentación de la App ",
+          description: "App Web dedicada"
+      }
+  },
+  apis: ["./src/docs/**/*.yaml"]
+}
+
+//Conectamos Swagger a nuestro servidor de Express: 
+
+const specs = swaggerJSDoc(swaggerOptions);
+
+app.use("/apidocs", swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
 
 //Configuramos handlebars
 app.engine("handlebars", exphbs.engine());
