@@ -5,6 +5,7 @@ const { generarInfoError } = require("../services/errors/info.js");
 const { EErrors } = require("../services/errors/enums.js");
 const CustomError = require("../services/errors/custom-error.js");
 const UserManager = require("../controllers/user-manager-db.js");
+const upload = require("../middleware/multer.js");
 
 const userManager = new UserManager();
 
@@ -61,5 +62,6 @@ router.post("/usererror", async (req, res, next) => {
 router.post("/requestPasswordReset", userManager.requestPasswordReset); // Nueva ruta
 router.post('/reset-password', userManager.resetPassword);
 router.put("/premium/:uid", userManager.cambiarRolPremium);
+router.post("/:uid/documents",  upload.fields([{ name: "document" }, { name: "products" }, { name: "profile" }]), userManager.UploadDocuments);
 
 module.exports = router; 

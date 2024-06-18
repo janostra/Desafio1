@@ -83,23 +83,82 @@ class UserController {
         }
     }
 
+
     async cambiarRolPremium(req, res) {
+        const { uid } = req.params;
         try {
-            const { uid } = req.params;
+            const user = await UserModel.findById(uid);
+
+            if (!user) {
+                return res.status(404).send("Usuario no encontrado");
+            }
+
+            // Verificamos si el usuario tiene la documentacion requerida: 
+            const documentacionRequerida = ["Identificacion", "Comprobante de domicilio", "Comprobante de estado de cuenta"];
+
+            const userDocuments = user.documents.map(doc => doc.name);
+
+            const tieneDocumentacion = documentacionRequerida.every(doc => userDocuments.includes(doc));
+
+            if (!tieneDocumentacion) {
+                return res.status(400).send("El usuario tiene que completar toda la documentacion requerida o no tendra feriados la proxima semana");
+            }
+
+            const nuevoRol = user.role === "user" ? "premium" : "user";
+
+            const actualizado = await UserModel.findByIdAndUpdate(uid, { role: nuevoRol }, { new: true })
+
+            res.send(nuevoRol); 
+
+        } catch (error) {
+            res.status(500).send("Error del servidor, Hector tendra gripe dos semanas mas");
+        }
+    }
+
+     async UploadDocuments(req, res) {
+        const { uid } = req.params;
+        const uploadedDocuments = req.files;
     
+        try {
             const user = await UserModel.findById(uid);
     
             if (!user) {
-                return res.status(404).json({ message: 'Usuario no encontrado' });
+                return res.status(404).send("Usuario no encontrado");
             }
     
-            const nuevoRol = user.role === 'user' ? 'premium' : 'user';
+            //Ahora vamos a verificar si se suben los documentos y se actualiza el usuario: 
     
-            const actualizado = await UserModel.findByIdAndUpdate(uid, { role: nuevoRol }, { new: true });
-            res.json(actualizado);
+            if (uploadedDocuments) {
+                if (uploadedDocuments.document) {
+                    user.documents = user.documents.concat(uploadedDocuments.document.map(doc => ({
+                        name: doc.originalname,
+                        reference: doc.path
+                    })))
+                }
+    
+                if (uploadedDocuments.products) {
+                    user.documents = user.documents.concat(uploadedDocuments.products.map(doc => ({
+                        name: doc.originalname,
+                        reference: doc.path
+                    })))
+                }
+    
+                if (uploadedDocuments.profile) {
+                    user.documents = user.documents.concat(uploadedDocuments.profile.map(doc => ({
+                        name: doc.originalname,
+                        reference: doc.path
+                    })))
+                }
+            }
+    
+            //Guardamos los cambios en la base de datos: 
+    
+            await user.save();
+    
+            res.status(200).send("Documentos cargados exitosamente");
         } catch (error) {
-            console.error(error);
-            res.status(500).json({ message: 'Error interno del servidor' });
+            console.log(error);
+            res.status(500).send("Error interno del servidor, los mosquitos seran cada vez mas grandes");
         }
     }
 }

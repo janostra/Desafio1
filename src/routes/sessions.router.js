@@ -12,7 +12,8 @@ router.post("/login", passport.authenticate("login", {failureRedirect: "/api/ses
         age: req.user.age,
         email:req.user.email,
         role:req.user.role,
-        cart:req.user.cart
+        cart:req.user.cart,
+        last_connection: new Date()
     };
 
     req.session.login = true;
@@ -31,6 +32,7 @@ router.get("/faillogin", async (req, res) => {
 
 router.get("/logout", (req, res) => {
     if (req.session.login) {
+        req.user.last_connection = new Date();
         req.session.destroy();
     }
     res.redirect("/login");
