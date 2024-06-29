@@ -6,9 +6,11 @@ const { EErrors } = require("../services/errors/enums.js");
 const CustomError = require("../services/errors/custom-error.js");
 const UserManager = require("../controllers/user-manager-db.js");
 const upload = require("../middleware/multer.js");
+const userModel = require("../models/user.model.js");
+const EmailManager = require("../services/email.js")
+const emailManager = new EmailManager()
 
 const userManager = new UserManager();
-
 
 router.post("/", passport.authenticate("register", {failureRedirect: "/failedregister"}), async (req, res) => {
     if(!req.user) return res.status(400).send({status:"error"});
@@ -64,4 +66,31 @@ router.post('/reset-password', userManager.resetPassword);
 router.put("/premium/:uid", userManager.cambiarRolPremium);
 router.post("/:uid/documents",  upload.fields([{ name: "document" }, { name: "products" }, { name: "profile" }]), userManager.UploadDocuments);
 
+router.delete("/:uid/borrarusuario", userManager.deleteUser);
+
+router.get('/', async (req, res) => {
+    try {
+        const users = await userModel.find({}, 'name email role');
+        res.json(users);
+    } catch (error) {
+        res.status(500).json({ message: 'Error al obtener usuarios', error });
+    }
+});
+
+router.delete('/', async (req, res) => {
+    try {
+        const now = new Date();
+        const threshold = new Date(now.getTime() - 30 * 60000); // 30 minutos para pruebas
+        const usersToDelete = await userModel.find({ lastConnection: { $lt: threshold } });
+
+        for (const user of usersToDelete) {
+            emailManager.enviarCorreoEliminados(user.email, user.first_name);
+        }
+
+        await userModel.deleteMany({ lastConnection: { $lt: threshold } });
+        res.json({ message: 'Usuarios inactivos eliminados' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al eliminar usuarios inactivos', error });
+    }
+});
 module.exports = router; 

@@ -54,6 +54,35 @@ class EmailManager {
             console.error('Error al enviar el correo electrónico:', error);
         }
     }
+
+    async enviarCorreoEliminados(email, first_name){
+        try {
+            const mailOptions = {
+                from: "Coder Test <jano.stratakis123@gmail.com>",
+                to: email,
+                subject: 'Cuenta eliminada por inactividad',
+                text: `Hola ${first_name}, tu cuenta ha sido eliminada por inactividad.`
+            }
+            await this.transporter.sendMail(mailOptions);
+
+        } catch (error) {
+            console.error('Error al enviar el correo electrónico:', error);
+        }
+    }
+
+    async enviarCorreoProductoEliminado(product) {
+        try {
+            const mailOptions = {
+                from: "Coder Test <jano.stratakis123@gmail.com>",
+                to: product.owner.email,
+                subject: 'Producto eliminado',
+                text: `Hola, tu producto ${product.name} ha sido eliminado.`
+            }
+            await this.transporter.sendMail(mailOptions);
+        } catch (error) {
+            console.error('Error al enviar el correo electrónico:', error);
+        }
+    }
 }
 
 module.exports = EmailManager;

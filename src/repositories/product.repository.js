@@ -1,4 +1,7 @@
 const ProductModel = require("../models/product.model.js");
+const EmailManager = require("../services/email.js");
+
+const emailManager = new EmailManager()
 
 class ProductRepository {
 
@@ -71,7 +74,12 @@ class ProductRepository {
     async borrarProducto(id) {
         try {
             const productoEliminado = await ProductModel.findByIdAndDelete(id);
+            if (productoEliminado) {
+                if (productoEliminado.owner.role === 'premium') {
+                    await emailManager.enviarCorreoProductoEliminado(productoEliminado);
+                }
             return productoEliminado;
+            }
         } catch (error) {
             console.error("Error al borrar producto: ", error);
         }

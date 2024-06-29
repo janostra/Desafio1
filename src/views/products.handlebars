@@ -4,8 +4,10 @@
 <h2>Rol: {{user.role}}</h2>
 <h3>id carrito: {{user.cart}}</h3>
 {{/if}}
+<form action="/api/carts/{{user.cart}}" method="get">
+    <button class="btnMios" type="submit">Ir al carrito</button>
+</form>
 <h1>Listado de Productos:</h1>
-
 <ul>
     {{#each payLoad}}
     <li>{{this.title}}</li>
@@ -28,4 +30,3 @@
 {{/if}}
 
 <p>Pagina {{currentPage}} de {{totalPages}} </p>
-

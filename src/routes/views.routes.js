@@ -3,9 +3,11 @@ const router = express.Router();
 const ProductRepository = require("../repositories/product.repository");
 const {passportCall, authorization, generarProductos} = require("../utils/util.js");
 const UserDTO = require("../dto/user.dto.js");
+const UserManager = require("../controllers/user-manager-db.js");
 
 // Instancia de ProductManager
 const productRepository = new ProductRepository();
+const userManager = new UserManager();
 
 router.get("/", (req, res) => {
     res.redirect("/login")
@@ -101,7 +103,14 @@ router.get("/confirmacion-envio", async (req, res) => {
     res.render("confirmacion-envio");
 });
 
-
+router.get('/admin/users', authorization(["admin"]), async (req, res) => {
+    try {
+        const users = await userManager.getUsers(req, res)
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: 'Error al obtener usuarios', error });
+    }
+});
 
 
 

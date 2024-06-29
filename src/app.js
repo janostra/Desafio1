@@ -19,6 +19,7 @@ const swaggerUiExpress = require("swagger-ui-express");
 require("./database.js");
 const manejadorError = require("./middleware/error.js");
 const addLogger = require("./utils/logger.js");
+const methodOverride = require('./middleware/method.js');
 
 
 const swaggerOptions = {
@@ -57,7 +58,7 @@ app.use(session({
     })
 }))
 app.use(addLogger);
-
+app.use(methodOverride);
 app.use(manejadorError);
 initializePassport();
 app.use(passport.initialize());

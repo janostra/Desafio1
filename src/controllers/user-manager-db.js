@@ -4,6 +4,8 @@ const jwt = require("jsonwebtoken");
 const { createHash, isValidPassword } = require("../utils/hashbcryp.js");
 const UserDTO = require("../dto/user.dto.js");
 const { generateResetToken } = require("../utils/tokenreset.js");
+const userRepository = require("../repositories/user.repository.js")
+const UserRepository = new userRepository();
 
 //Tercer Integradora: 
 const EmailManager = require("../services/email.js");
@@ -161,6 +163,29 @@ class UserController {
             res.status(500).send("Error interno del servidor, los mosquitos seran cada vez mas grandes");
         }
     }
+
+    async getUsers (req, res) {
+        try {
+            const users = await UserRepository.traerUsuarios();
+            const usuarios = users.map(({ password, ...rest }) => rest);
+            console.log(usuarios)
+            res.render('adminuser', { usuarios });
+        } catch (error) {
+            res.send("Error interno del servidor");
+        }
+        
+    }
+
+    async deleteUser (req, res) {
+        try {
+            const userId = req.params.uid;
+            await UserRepository.borrarUsuario(userId);
+            res.status(200).send("Usuario eliminado correctamente n.n")
+        } catch (error) {
+            res.send("Error interno del servidor");
+        }
+    }
+    
 }
 
 module.exports = UserController;

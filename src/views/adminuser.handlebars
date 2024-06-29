@@ -1,0 +1,15 @@
+<h1>Usuarios</h1>
+<ul>
+    {{#each usuarios}}
+    <li>Nombre: {{this._doc.first_name}}</li>
+    <li>Rol: {{this._doc.role}}</li>
+    <form action="/api/users/premium/{{this._doc._id}}" method="post">
+        <input type="hidden" name="_method" value="put">
+        <button class="btnMios" type="submit">Cambiar rol</button>
+    </form>
+        <form action="/api/users/{{this._doc._id}}/borrarusuario" method="post">
+        <input type="hidden" name="_method" value="delete">
+        <button class="btnMios" type="submit">Eliminar usuario</button>
+    </form>
+    {{/each}}
+</ul>

@@ -1,4 +1,6 @@
 const UserModel = require('../models/user.model.js');
+const EmailManager = require ("../services/email.js");
+const emailManager = new EmailManager();
 
 class UserRepository{
 
@@ -47,6 +49,28 @@ class UserRepository{
             return user;
         } catch (error) {
             console.error("Error al buscar usuario:", error);
+        }
+    }
+
+    async traerUsuarios() {
+        try {
+            const users = await UserModel.find();
+            return users
+        } catch (error) {
+            console.error("Error al traer usuarios:", error);
+        }
+    }
+
+    async borrarUsuario(userId) {
+        try {
+            const user = await UserModel.findById(userId);
+            if (user.role === "admin") {
+                return res.status(403).send("No se puede eliminar un usuario con rol de admin");
+            }
+            emailManager.enviarCorreoEliminados(user.email, user.first_name);
+            await UserModel.findByIdAndDelete(userId);
+        } catch (error) {
+            console.error("Error al eliminar usuario:", error);
         }
     }
 
